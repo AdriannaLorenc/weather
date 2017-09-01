@@ -1,0 +1,82 @@
+document.addEventListener('DOMContentLoaded', function () {
+
+    // const api = 'http://api.openweathermap.org/data/2.5/weather?lat=48.13&lon=17.12&appid=1d3f900f2be9fd369af11d18b214e288';
+    const apiUrl = 'https://api.openweathermap.org/data/2.5/weather?APPID=1d3f900f2be9fd369af11d18b214e288';
+    const input = document.querySelector('#text');
+    let dataApi = null;
+    const div = document.querySelector('.main');
+    console.log(div);
+
+    document.querySelector('#submit').addEventListener('click', Api);
+
+    function Api() {
+        const boxWeather = document.createElement('div.weather');
+        let city = (input.value) ? input.value : 'Kraków';
+
+
+
+        // console.log(city);
+        let url = apiUrl + '&q=' + city;
+        // console.log(url);
+
+        fetch(url)
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Error getting data');
+                }
+            })
+            .then(data => {
+                console.log(data, "dataaat");
+                console.log(data.main);
+                console.log(data.main.humidity);
+
+                let h3 = document.createElement('h3');
+                // let h4 = document.createElement('h4');
+                let ul = document.createElement("ul");
+                let temp = document.createElement('li');
+                let temMax = document.createElement('li');
+                let humidity = document.createElement('li');
+                let pressure = document.createElement('li');
+                let clouds = document.createElement('li');
+                let wind = document.createElement('li');
+                let delButton = document.createElement('button');
+
+                const temperature= (data.main.temp - 273.15).toFixed(0);
+
+                h3.innerHTML = city +  ", " + data.name + ": today is  " + data.weather[0].description;
+                input.value = "";
+                temp.innerHTML = "temperature: " + temperature + ' &#8451';
+                humidity.innerHTML = "humidity level: " + data.main.humidity + " %";
+                pressure.innerHTML = "pressure: " + data.main.pressure + " hPa";
+                clouds.innerHTML = "cloudiness: " + data.clouds.all + " %";
+                wind.innerHTML = "speed of wind: " + data.wind.speed + " km/h";
+                delButton.innerHTML = "delete forecast";
+
+                boxWeather.appendChild(h3);
+                ul.appendChild(temp);
+                ul.appendChild(humidity);
+                ul.appendChild(pressure);
+                ul.appendChild(clouds);
+                ul.appendChild(wind);
+                boxWeather.appendChild(ul);
+                boxWeather.appendChild(delButton);
+                div.appendChild(boxWeather);
+
+                delButton.addEventListener('click', deleteForecast);
+                function deleteForecast() {
+                    delButton.parentElement.remove(delButton);
+                }
+
+            })
+            .catch(err => {
+                console.log(err);
+            });
+
+    }
+
+
+    Api();
+
+});
